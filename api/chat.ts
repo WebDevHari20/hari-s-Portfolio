@@ -1,4 +1,4 @@
-import { ApiRequest, ApiResponse, getBody } from './_lib';
+import { ApiRequest, ApiResponse, getBody } from '../lib/api';
 import { createChatReply } from './chat-lib';
 
 export default async function handler(request: ApiRequest, response: ApiResponse) {

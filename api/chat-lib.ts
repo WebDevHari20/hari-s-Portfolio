@@ -1,5 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
-import { getLocalFallback } from './_lib';
+import { getLocalFallback } from '../lib/api';
 
 const HARI_SYSTEM_INSTRUCTION = `You are Hari Bahadur Narzary's official AI Developer Twin.
 You represent Hari Bahadur Narzary, a senior full-stack web developer and architect based in Assam, India.

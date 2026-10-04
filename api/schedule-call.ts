@@ -1,4 +1,4 @@
-import { ApiRequest, ApiResponse, HARI_NOTIFICATION_EMAIL, getBody, sendNotificationEmail } from './_lib';
+import { ApiRequest, ApiResponse, HARI_NOTIFICATION_EMAIL, getBody, sendNotificationEmail } from '../lib/api';
 
 export default async function handler(request: ApiRequest, response: ApiResponse) {
   if (request.method !== 'POST') return response.status(405).json({ error: 'Method not allowed' });

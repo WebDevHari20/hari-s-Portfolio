@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
-import { sendNotificationEmail } from './api/_lib';
+import { sendNotificationEmail } from './lib/api';
 
 dotenv.config();
 
