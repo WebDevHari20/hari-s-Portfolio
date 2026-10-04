@@ -132,8 +132,15 @@ export const BookWebsite: React.FC<BookWebsiteProps> = ({ onOpenCal }) => {
         }),
       });
       if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        throw new Error(data?.error || 'The inquiry could not be sent.');
+        let errorDetail = '';
+        try {
+          const data = await response.json();
+          errorDetail = data?.error || data?.message || '';
+        } catch {
+          const text = await response.text().catch(() => '');
+          errorDetail = text ? `Server response (${response.status}): ${text.slice(0, 150)}` : `Server response (${response.status})`;
+        }
+        throw new Error(errorDetail || 'The inquiry could not be sent.');
       }
       setIsSubmitted(true);
     } catch (err) {

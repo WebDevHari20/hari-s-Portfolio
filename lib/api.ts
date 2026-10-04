@@ -8,7 +8,7 @@ export interface ApiResponse {
   json: (body: unknown) => void;
 }
 
-export const HARI_NOTIFICATION_EMAIL = 'harinarzary22@gmail.com';
+export const HARI_NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL?.trim() || 'harinarzary22@gmail.com';
 
 interface EmailOptions {
   subject: string;
@@ -18,10 +18,22 @@ interface EmailOptions {
 
 export async function sendNotificationEmail({ subject, text, replyTo }: EmailOptions): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY?.trim();
-  const from = process.env.RESEND_FROM_EMAIL?.trim();
-  if (!apiKey || !from) {
-    throw new Error('Email service is not configured. Set RESEND_API_KEY and RESEND_FROM_EMAIL in Vercel.');
+  if (!apiKey) {
+    throw new Error('Email service is not configured. Set RESEND_API_KEY in your environment variables.');
   }
+
+  let from = process.env.RESEND_FROM_EMAIL?.trim();
+  if (
+    !from ||
+    from.includes('@gmail.com') ||
+    from.includes('@yahoo.com') ||
+    from.includes('@outlook.com') ||
+    from.includes('@hotmail.com')
+  ) {
+    from = 'Portfolio Inquiry <onboarding@resend.dev>';
+  }
+
+  const recipient = HARI_NOTIFICATION_EMAIL;
 
   const emailResponse = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -31,7 +43,7 @@ export async function sendNotificationEmail({ subject, text, replyTo }: EmailOpt
     },
     body: JSON.stringify({
       from,
-      to: [HARI_NOTIFICATION_EMAIL],
+      to: [recipient],
       subject,
       text,
       ...(replyTo && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(replyTo) ? { reply_to: replyTo } : {}),
@@ -40,7 +52,12 @@ export async function sendNotificationEmail({ subject, text, replyTo }: EmailOpt
 
   if (!emailResponse.ok) {
     const details = await emailResponse.text();
-    throw new Error(`Email provider rejected the message (${emailResponse.status}): ${details}`);
+    let parsedMessage = details;
+    try {
+      const parsed = JSON.parse(details);
+      parsedMessage = parsed.message || parsed.error || details;
+    } catch {}
+    throw new Error(`Email provider rejected the message (${emailResponse.status}): ${parsedMessage}`);
   }
 }
 
@@ -71,5 +88,13 @@ export function getLocalFallback(query: string): string {
 }
 
 export function getBody(request: ApiRequest): Record<string, unknown> {
-  return request.body && typeof request.body === 'object' ? request.body as Record<string, unknown> : {};
+  if (!request.body) return {};
+  if (typeof request.body === 'string') {
+    try {
+      return JSON.parse(request.body);
+    } catch {
+      return {};
+    }
+  }
+  return typeof request.body === 'object' ? (request.body as Record<string, unknown>) : {};
 }

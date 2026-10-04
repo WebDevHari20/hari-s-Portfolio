@@ -43,8 +43,15 @@ export const CalModal: React.FC<CalModalProps> = ({ isOpen, onClose, onConfirm }
         }),
       });
       if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        throw new Error(data?.error || 'The booking could not be sent.');
+        let errorDetail = '';
+        try {
+          const data = await response.json();
+          errorDetail = data?.error || data?.message || '';
+        } catch {
+          const text = await response.text().catch(() => '');
+          errorDetail = text ? `Server response (${response.status}): ${text.slice(0, 150)}` : `Server response (${response.status})`;
+        }
+        throw new Error(errorDetail || 'The booking could not be sent.');
       }
       setIsBooked(true);
       onConfirm(selectedSlot);

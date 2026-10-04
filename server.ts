@@ -223,7 +223,8 @@ app.post('/api/contact', async (req, res) => {
       });
     } catch (emailErr) {
       console.error('Inquiry email delivery failed:', emailErr);
-      return res.status(503).json({ error: 'The inquiry could not be emailed. Please try again or email Hari directly.' });
+      const message = emailErr instanceof Error ? emailErr.message : 'Email delivery failed.';
+      return res.status(503).json({ error: `The inquiry could not be emailed: ${message}` });
     }
 
     // Persist to local JSON database file
@@ -295,7 +296,8 @@ app.post('/api/schedule-call', async (req, res) => {
       });
     } catch (emailErr) {
       console.error('Booking email delivery failed:', emailErr);
-      return res.status(503).json({ error: 'The booking could not be emailed. Please try again or email Hari directly.' });
+      const message = emailErr instanceof Error ? emailErr.message : 'Email delivery failed.';
+      return res.status(503).json({ error: `The booking could not be emailed: ${message}` });
     }
 
     // Persist to local JSON database file
