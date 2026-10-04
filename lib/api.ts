@@ -17,10 +17,10 @@ interface EmailOptions {
 }
 
 export async function sendNotificationEmail({ subject, text, replyTo }: EmailOptions): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL;
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const from = process.env.RESEND_FROM_EMAIL?.trim();
   if (!apiKey || !from) {
-    throw new Error('Email service is not configured. Set RESEND_API_KEY and RESEND_FROM_EMAIL.');
+    throw new Error('Email service is not configured. Set RESEND_API_KEY and RESEND_FROM_EMAIL in Vercel.');
   }
 
   const emailResponse = await fetch('https://api.resend.com/emails', {
@@ -46,6 +46,15 @@ export async function sendNotificationEmail({ subject, text, replyTo }: EmailOpt
 
 export function getLocalFallback(query: string): string {
   const lower = query.toLowerCase();
+  if (
+    lower.includes('host') ||
+    lower.includes('deploy') ||
+    lower.includes('vercel') ||
+    lower.includes('domain') ||
+    lower.includes('dns')
+  ) {
+    return 'Hari deploys production sites to Vercel or AWS edge hosting with Cloudflare DNS. The client receives ownership of the Git repository, domain, and hosting account. Deployment includes connecting the repository, configuring environment variables, adding the custom domain, setting DNS records, and verifying the production build. You can renew and manage hosting yourself, or choose optional maintenance at around $99–$100/month.';
+  }
   if (lower.includes('maintenance') || lower.includes('maintain') || lower.includes('monthly') || lower.includes('ownership')) {
     return 'You have two options: monthly maintenance care (~₹10k / ~$99–$100/mo), or zero maintenance fee with 100% ownership of the website, code, domain, and hosting accounts.';
   }

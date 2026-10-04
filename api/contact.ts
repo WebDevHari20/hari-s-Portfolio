@@ -34,7 +34,8 @@ export default async function handler(request: ApiRequest, response: ApiResponse
     });
   } catch (error) {
     console.error('Failed to send inquiry email:', error);
-    return response.status(503).json({ error: 'The inquiry could not be emailed. Please try again or email Hari directly.' });
+    const message = error instanceof Error ? error.message : 'Email provider request failed.';
+    return response.status(503).json({ error: `The inquiry could not be emailed: ${message}` });
   }
 
   return response.status(200).json({

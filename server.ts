@@ -56,6 +56,15 @@ Technical Philosophy:
 function getLocalFallback(query: string): string {
   const lower = query.toLowerCase();
   if (
+    lower.includes('host') ||
+    lower.includes('deploy') ||
+    lower.includes('vercel') ||
+    lower.includes('domain') ||
+    lower.includes('dns')
+  ) {
+    return "Hari deploys production sites to Vercel or AWS edge hosting with Cloudflare DNS. The process is: connect the Git repository, configure environment variables, connect the custom domain, set DNS records, and verify the production build. Clients receive ownership of the repository, domain, and hosting account, so they can renew and manage hosting themselves. Optional maintenance is around $99–$100/month.";
+  }
+  if (
     lower.includes('maintenance') ||
     lower.includes('maintain') ||
     lower.includes('retainer') ||
