@@ -98,6 +98,39 @@
   box-shadow: 2px 2px 0px var(--secondary) !important;
 }
 
+/* Layout density presets */
+[data-density='NEO'] .gap-6 {
+  gap: 1rem !important;
+}
+
+[data-density='NEO'] .p-5 {
+  padding: 1rem !important;
+}
+
+[data-density='NEO'] .p-6 {
+  padding: 1.25rem !important;
+}
+
+[data-density='NEO'] .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1rem !important;
+}
+
+[data-density='MIN'] .gap-6 {
+  gap: 0.75rem !important;
+}
+
+[data-density='MIN'] .p-5 {
+  padding: 0.75rem !important;
+}
+
+[data-density='MIN'] .p-6 {
+  padding: 1rem !important;
+}
+
+[data-density='MIN'] .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0.75rem !important;
+}
+
 .font-syne {
   font-family: 'Syne', sans-serif;
 }

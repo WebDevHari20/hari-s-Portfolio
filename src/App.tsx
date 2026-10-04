@@ -31,6 +31,10 @@ export default function App() {
     applyThemeToDom(vibeTheme);
   }, [vibeTheme]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab]);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => {
@@ -46,6 +50,11 @@ export default function App() {
     }
   };
 
+  const handleSetDensity = (newDensity: DensityMode) => {
+    setDensityMode(newDensity);
+    showToast(`LAYOUT DENSITY: ${newDensity}`);
+  };
+
   const handleConfirmCalSlot = (slot: string) => {
     showToast(`DISCOVERY CALL RESERVED FOR: ${slot}`);
   };
@@ -53,6 +62,7 @@ export default function App() {
   return (
     <div
       className="min-h-screen text-[#e3e1e9] flex flex-col justify-between selection:bg-[var(--primary)] selection:text-[var(--primary-contrast)] transition-colors duration-300"
+      data-density={densityMode}
       style={{ backgroundColor: 'var(--bg-main)' }}
     >
       {/* Top Fixed Header */}
@@ -60,7 +70,7 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         densityMode={densityMode}
-        setDensityMode={setDensityMode}
+        setDensityMode={handleSetDensity}
         vibeTheme={vibeTheme}
         setVibeTheme={handleSetTheme}
         onOpenCal={() => setIsCalOpen(true)}

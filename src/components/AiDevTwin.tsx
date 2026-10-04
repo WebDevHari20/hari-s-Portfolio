@@ -78,10 +78,14 @@ export const AiDevTwin: React.FC<AiDevTwinProps> = ({ onOpenCal, onOpenSpec }) =
   const [inputVal, setInputVal] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const chatStreamRef = useRef<HTMLDivElement>(null);
+  const chatTerminalRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     if (chatStreamRef.current) {
-      chatStreamRef.current.scrollTop = chatStreamRef.current.scrollHeight;
+      chatStreamRef.current.scrollTo({
+        top: chatStreamRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
     }
   };
 
@@ -97,6 +101,10 @@ export const AiDevTwin: React.FC<AiDevTwinProps> = ({ onOpenCal, onOpenSpec }) =
   const handleSend = async (textToSend?: string) => {
     const text = (textToSend || inputVal).trim();
     if (!text) return;
+
+    if (textToSend) {
+      chatTerminalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
     const userMsg: ChatMessage = {
       id: 'msg-' + Date.now(),
@@ -529,6 +537,7 @@ export const AiDevTwin: React.FC<AiDevTwinProps> = ({ onOpenCal, onOpenSpec }) =
 
         {/* RIGHT COLUMN: Cyberpunk Chat Terminal */}
         <div
+          ref={chatTerminalRef}
           className="flex-1 flex flex-col border-2 overflow-hidden min-h-[620px] 2xl:min-h-[780px] transition-colors"
           style={{
             backgroundColor: 'var(--bg-card-alt)',
