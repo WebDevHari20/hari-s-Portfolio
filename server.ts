@@ -95,8 +95,9 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey || apiKey === 'MY_GEMINI_API_KEY' || apiKey.trim() === '') {
+    const configuredKey = process.env.GEMINI_API_KEY?.trim();
+    const apiKey = configuredKey?.replace(/^(['"])(.*)\1$/, '$2').trim();
+    if (!apiKey || apiKey === 'MY_GEMINI_API_KEY') {
       return res.json({
         reply: getLocalFallback(message),
         source: 'local_engine',
@@ -137,7 +138,7 @@ app.post('/api/chat', async (req, res) => {
         source: 'twin_ai',
       });
     } catch (aiErr: any) {
-      console.warn('AI API call failed, falling back to local engine:', aiErr?.message || aiErr);
+      console.error('Gemini API call failed, falling back to local engine:', aiErr?.message || aiErr);
       return res.json({
         reply: getLocalFallback(message),
         source: 'local_engine_fallback',

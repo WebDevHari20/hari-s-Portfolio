@@ -138,7 +138,7 @@ export const AiDevTwin: React.FC<AiDevTwinProps> = ({ onOpenCal, onOpenSpec }) =
           id: 'msg-bot-' + Date.now(),
           sender: 'ai',
           timestamp: getCurrentTime(),
-          tag: 'HARI_TWIN // LIVE',
+          tag: data.source === 'twin_ai' ? 'HARI_TWIN // LIVE' : 'HARI_TWIN // LOCAL FALLBACK',
           text: data.reply,
         };
         setMessages((prev) => [...prev, botReply]);

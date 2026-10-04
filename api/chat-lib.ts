@@ -7,8 +7,9 @@ Never mention Gemini, Google, LLM, or internal AI model names. If asked who you 
 Pricing starts at $300. Keep responses concise, practical, and focused on Hari's web engineering services.`;
 
 export async function createChatReply(message: string, history: unknown): Promise<{ reply: string; source: string }> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey || apiKey === 'MY_GEMINI_API_KEY' || !apiKey.trim()) {
+  const configuredKey = process.env.GEMINI_API_KEY?.trim();
+  const apiKey = configuredKey?.replace(/^(['"])(.*)\1$/, '$2').trim();
+  if (!apiKey || apiKey === 'MY_GEMINI_API_KEY') {
     return { reply: getLocalFallback(message), source: 'local_engine' };
   }
 
@@ -31,7 +32,7 @@ export async function createChatReply(message: string, history: unknown): Promis
     });
     return { reply: response.text || getLocalFallback(message), source: 'twin_ai' };
   } catch (error) {
-    console.warn('AI API call failed, using local fallback:', error);
+    console.error('Gemini API call failed, using local fallback:', error);
     return { reply: getLocalFallback(message), source: 'local_engine_fallback' };
   }
 }
