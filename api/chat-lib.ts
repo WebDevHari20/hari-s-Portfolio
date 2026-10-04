@@ -25,7 +25,7 @@ export async function createChatReply(message: string, history: unknown): Promis
     contents.push({ role: 'user', parts: [{ text: message }] });
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
-      model: 'gemini-3.8-flash',
+      model: 'gemini-2.5-flash',
       contents,
       config: { systemInstruction: HARI_SYSTEM_INSTRUCTION, temperature: 0.7, maxOutputTokens: 600 },
     });
