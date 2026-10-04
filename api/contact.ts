@@ -49,7 +49,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   const currentSite = String(body.currentSite || 'None');
   const projectLore = String(body.projectLore || 'No notes');
 
-  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const configuredKey = process.env.RESEND_API_KEY?.trim();
+  const apiKey = configuredKey?.replace(/^(['"])(.*)\1$/, '$2').replace(/^Bearer\s+/i, '').trim();
   if (!apiKey) {
     return res.status(503).json({
       error: 'RESEND_API_KEY is not configured in Vercel. Please add RESEND_API_KEY to your Vercel Project Environment Variables and redeploy.',
@@ -60,6 +61,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   // If not configured, or if configured with a public webmail domain (like @gmail.com)
   // which Resend rejects without DNS domain verification, default to Resend's verified onboarding sender.
   let from = process.env.RESEND_FROM_EMAIL?.trim();
+  from = from?.replace(/^(['"])(.*)\1$/, '$2').trim();
   if (
     !from ||
     from.includes('@gmail.com') ||
@@ -112,8 +114,15 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         parsedMessage = parsed.message || parsed.error || errorText;
       } catch {}
       console.error('Resend API rejected inquiry:', resendResponse.status, parsedMessage);
+      
+      let hint = '';
+      if (resendResponse.status === 401) {
+        const preview = apiKey ? `${apiKey.slice(0, 6)}...${apiKey.slice(-4)}` : 'empty';
+        hint = ` (Vercel key detected as: ${preview}. Please ensure your valid key from https://resend.com/api-keys is saved in Vercel and trigger a Redeploy)`;
+      }
+
       return res.status(resendResponse.status).json({
-        error: `Resend error (${resendResponse.status}): ${parsedMessage}`,
+        error: `Resend error (${resendResponse.status}): ${parsedMessage}${hint}`,
       });
     }
 

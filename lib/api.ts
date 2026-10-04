@@ -17,12 +17,14 @@ interface EmailOptions {
 }
 
 export async function sendNotificationEmail({ subject, text, replyTo }: EmailOptions): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const configuredKey = process.env.RESEND_API_KEY?.trim();
+  const apiKey = configuredKey?.replace(/^(['"])(.*)\1$/, '$2').replace(/^Bearer\s+/i, '').trim();
   if (!apiKey) {
     throw new Error('Email service is not configured. Set RESEND_API_KEY in your environment variables.');
   }
 
   let from = process.env.RESEND_FROM_EMAIL?.trim();
+  from = from?.replace(/^(['"])(.*)\1$/, '$2').trim();
   if (
     !from ||
     from.includes('@gmail.com') ||
