@@ -17,6 +17,7 @@ export const BookWebsite: React.FC<BookWebsiteProps> = ({ onOpenCal }) => {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
@@ -113,10 +114,10 @@ export const BookWebsite: React.FC<BookWebsiteProps> = ({ onOpenCal }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmissionError(null);
 
     try {
-      // Dispatch directly to secure local backend API (persisted immediately)
-      await fetch('/api/contact', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -130,12 +131,16 @@ export const BookWebsite: React.FC<BookWebsiteProps> = ({ onOpenCal }) => {
           projectLore,
         }),
       });
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.error || 'The inquiry could not be sent.');
+      }
+      setIsSubmitted(true);
     } catch (err) {
-      console.warn('Backend brief dispatch error:', err);
+      setSubmissionError(err instanceof Error ? err.message : 'The inquiry could not be sent.');
     }
 
     setIsSubmitting(false);
-    setIsSubmitted(true);
   };
 
   return (
@@ -712,6 +717,20 @@ export const BookWebsite: React.FC<BookWebsiteProps> = ({ onOpenCal }) => {
                       </>
                     )}
                   </button>
+
+                  {submissionError && (
+                    <div
+                      className="p-4 border-2 text-sm font-grotesk"
+                      style={{
+                        color: '#fecaca',
+                        backgroundColor: 'rgba(127, 29, 29, 0.35)',
+                        borderColor: '#ef4444',
+                      }}
+                      role="alert"
+                    >
+                      {submissionError} Please use the direct email option below.
+                    </div>
+                  )}
 
                   {/* Submission Success Toast */}
                   {isSubmitted && (() => {

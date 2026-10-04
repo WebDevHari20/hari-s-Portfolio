@@ -12,6 +12,40 @@ export interface ApiResponse {
 
 export const HARI_NOTIFICATION_EMAIL = 'harinarzary22@gmail.com';
 
+interface EmailOptions {
+  subject: string;
+  text: string;
+  replyTo?: string;
+}
+
+export async function sendNotificationEmail({ subject, text, replyTo }: EmailOptions): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM_EMAIL;
+  if (!apiKey || !from) {
+    throw new Error('Email service is not configured. Set RESEND_API_KEY and RESEND_FROM_EMAIL.');
+  }
+
+  const emailResponse = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from,
+      to: [HARI_NOTIFICATION_EMAIL],
+      subject,
+      text,
+      ...(replyTo && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(replyTo) ? { reply_to: replyTo } : {}),
+    }),
+  });
+
+  if (!emailResponse.ok) {
+    const details = await emailResponse.text();
+    throw new Error(`Email provider rejected the message (${emailResponse.status}): ${details}`);
+  }
+}
+
 const HARI_SYSTEM_INSTRUCTION = `You are Hari Bahadur Narzary's official AI Developer Twin.
 You represent Hari Bahadur Narzary, a senior full-stack web developer and architect based in Assam, India.
 Never mention Gemini, Google, LLM, or internal AI model names. If asked who you are, say you are Hari's AI Developer Twin.

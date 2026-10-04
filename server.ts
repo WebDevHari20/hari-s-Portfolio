@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
+import { sendNotificationEmail } from './api/_lib';
 
 dotenv.config();
 
@@ -191,6 +192,30 @@ app.post('/api/contact', async (req, res) => {
     console.log(`Project Notes:\n${record.projectLore}`);
     console.log(`======================================================\n`);
 
+    try {
+      await sendNotificationEmail({
+        subject: `New website inquiry: ${record.businessName}`,
+        replyTo: record.contactHandle,
+        text: [
+          `New website inquiry received at ${timestamp}.`,
+          '',
+          `Contact: ${record.contactName}`,
+          `Email / WhatsApp: ${record.contactHandle}`,
+          `Business: ${record.businessName}`,
+          `Current website: ${record.currentSite}`,
+          `Project type: ${record.projectType}`,
+          `Timeline: ${record.timeline}`,
+          `Budget: ${record.budgetTier}`,
+          '',
+          'Project requirements:',
+          record.projectLore,
+        ].join('\n'),
+      });
+    } catch (emailErr) {
+      console.error('Inquiry email delivery failed:', emailErr);
+      return res.status(503).json({ error: 'The inquiry could not be emailed. Please try again or email Hari directly.' });
+    }
+
     // Persist to local JSON database file
     try {
       const filePath = path.join(SUBMISSIONS_DIR, 'inquiries.json');
@@ -245,6 +270,23 @@ app.post('/api/schedule-call', async (req, res) => {
     console.log(`Prospect: ${booking.name} | Email: ${booking.email}`);
     console.log(`Confirmed Slot: ${booking.slot}`);
     console.log(`======================================================\n`);
+
+    try {
+      await sendNotificationEmail({
+        subject: `New discovery call booking: ${booking.name}`,
+        replyTo: booking.email,
+        text: [
+          `New 15-minute discovery call booking received at ${timestamp}.`,
+          '',
+          `Name: ${booking.name}`,
+          `Email: ${booking.email}`,
+          `Selected slot: ${booking.slot}`,
+        ].join('\n'),
+      });
+    } catch (emailErr) {
+      console.error('Booking email delivery failed:', emailErr);
+      return res.status(503).json({ error: 'The booking could not be emailed. Please try again or email Hari directly.' });
+    }
 
     // Persist to local JSON database file
     try {
