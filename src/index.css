@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+:root {
+  --primary: #10e57a;
+  --primary-hover: #3df797;
+  --primary-contrast: #003919;
+  --primary-glow: rgba(16, 229, 122, 0.35);
+  --secondary: #571bc1;
+  --secondary-hover: #6e27ec;
+  --secondary-contrast: #ffffff;
+  --tertiary: #ffb2ce;
+  --bg-main: #121318;
+  --bg-card: #1a1b21;
+  --bg-card-alt: #0d0e13;
+  --border-subtle: #292a2f;
+  --border-strong: #10e57a;
+}
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-main);
+    color: #e3e1e9;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg-card-alt);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-subtle);
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+  }
+}
+
+/* Dynamic Theme Utility Classes */
+.theme-primary-bg {
+  background-color: var(--primary) !important;
+  color: var(--primary-contrast) !important;
+}
+
+.theme-primary-text {
+  color: var(--primary) !important;
+}
+
+.theme-primary-border {
+  border-color: var(--primary) !important;
+}
+
+.theme-secondary-bg {
+  background-color: var(--secondary) !important;
+  color: var(--secondary-contrast) !important;
+}
+
+.theme-secondary-text {
+  color: var(--secondary) !important;
+}
+
+.theme-secondary-border {
+  border-color: var(--secondary) !important;
+}
+
+.theme-bg-main {
+  background-color: var(--bg-main) !important;
+}
+
+.theme-bg-card {
+  background-color: var(--bg-card) !important;
+}
+
+.theme-bg-card-alt {
+  background-color: var(--bg-card-alt) !important;
+}
+
+.theme-border-subtle {
+  border-color: var(--border-subtle) !important;
+}
+
+.theme-shadow-brutal {
+  box-shadow: 4px 4px 0px var(--secondary) !important;
+}
+
+.theme-shadow-primary {
+  box-shadow: 4px 4px 0px var(--primary) !important;
+}
+
+.theme-shadow-sm {
+  box-shadow: 2px 2px 0px var(--secondary) !important;
+}
+
+.font-syne {
+  font-family: 'Syne', sans-serif;
+}
+
+.font-grotesk {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-mono-code {
+  font-family: 'Space Mono', monospace;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 26s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Material symbols outlined helper */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
