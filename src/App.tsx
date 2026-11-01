@@ -1,148 +1,159 @@
-import { ArrowUpRight, Github, Linkedin, Mail, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+﻿/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
-const projects = [
-  {
-    number: '01',
-    title: 'Business websites',
-    description:
-      'Fast, thoughtful websites that help small businesses look credible and get more enquiries.',
-    tags: ['Design', 'React', 'SEO'],
-  },
-  {
-    number: '02',
-    title: 'Personal brands',
-    description:
-      'Simple digital homes for people with something valuable to say, build, or share.',
-    tags: ['Strategy', 'UI design', 'Development'],
-  },
-  {
-    number: '03',
-    title: 'Web experiments',
-    description:
-      'Useful ideas brought to life with clean interfaces, strong details, and a little personality.',
-    tags: ['Prototyping', 'JavaScript', 'Motion'],
-  },
-];
-
-const skills = ['React', 'TypeScript', 'JavaScript', 'HTML & CSS', 'UI design', 'Accessibility'];
+import React, { useState, useEffect } from 'react';
+import { ActiveTab, CaseStudy, DensityMode, VibeTheme } from './types';
+import { THEMES, applyThemeToDom } from './themes';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import { MobileNav } from './components/MobileNav';
+import { WorkShowcase } from './components/WorkShowcase';
+import { AiDevTwin } from './components/AiDevTwin';
+import { BookWebsite } from './components/BookWebsite';
+import { CalModal } from './components/CalModal';
+import { ArchitectureModal } from './components/ArchitectureModal';
+import { SpecModal } from './components/SpecModal';
 
 export default function App() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<ActiveTab>('work');
+  const [vibeTheme, setVibeTheme] = useState<VibeTheme>('neo-acid');
+  const [densityMode, setDensityMode] = useState<DensityMode>('DEV');
+  
+  const [isCalOpen, setIsCalOpen] = useState(false);
+  const [isSpecOpen, setIsSpecOpen] = useState(false);
+  const [selectedCaseStudy, setSelectedCaseStudy] = useState<CaseStudy | null>(null);
+  
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const closeMenu = () => setMenuOpen(false);
+  useEffect(() => {
+    applyThemeToDom(vibeTheme);
+  }, [vibeTheme]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab]);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3800);
+  };
+
+  const handleSetTheme = (newTheme: VibeTheme) => {
+    setVibeTheme(newTheme);
+    const themeObj = THEMES[newTheme];
+    if (themeObj) {
+      showToast(`THEME ACTIVATED: ${themeObj.name.toUpperCase()}`);
+    }
+  };
+
+  const handleSetDensity = (newDensity: DensityMode) => {
+    setDensityMode(newDensity);
+    showToast(`LAYOUT DENSITY: ${newDensity}`);
+  };
+
+  const handleConfirmCalSlot = (slot: string) => {
+    showToast(`DISCOVERY CALL RESERVED FOR: ${slot}`);
+  };
 
   return (
-    <div className="site-shell">
-      <header className="site-header">
-        <a className="logo" href="#top" onClick={closeMenu} aria-label="Hari home">
-          H<span>.</span>
-        </a>
-        <button
-          className="menu-toggle"
-          type="button"
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          {menuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
+    <div
+      className="min-h-screen text-[#e3e1e9] flex flex-col justify-between selection:bg-[var(--primary)] selection:text-[var(--primary-contrast)] transition-colors duration-300"
+      data-density={densityMode}
+      style={{ backgroundColor: 'var(--bg-main)' }}
+    >
+      {/* Top Fixed Header */}
+      <Header
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        densityMode={densityMode}
+        setDensityMode={handleSetDensity}
+        vibeTheme={vibeTheme}
+        setVibeTheme={handleSetTheme}
+        onOpenCal={() => setIsCalOpen(true)}
+      />
 
-        <nav className={menuOpen ? 'site-nav is-open' : 'site-nav'} aria-label="Main navigation">
-          <a href="#work" onClick={closeMenu}>Work</a>
-          <a href="#about" onClick={closeMenu}>About</a>
-          <a href="#contact" onClick={closeMenu}>Contact</a>
-        </nav>
-      </header>
+      {/* Main Content View with padding for fixed header */}
+      <main className="w-full pt-16 md:pt-20 flex-1 flex flex-col">
+        {activeTab === 'work' && (
+          <WorkShowcase
+            setActiveTab={setActiveTab}
+            vibeTheme={vibeTheme}
+            setVibeTheme={handleSetTheme}
+            onOpenCal={() => setIsCalOpen(true)}
+            onSelectCaseStudy={(study) => setSelectedCaseStudy(study)}
+          />
+        )}
 
-      <main id="top">
-        <section className="hero section-wrap">
-          <div className="hero-copy">
-            <p className="eyebrow">Web developer · Assam, India</p>
-            <h1>I make the web feel a little more <em>human.</em></h1>
-            <p className="hero-intro">
-              I&apos;m Hari Narzary, a web developer who creates clean, useful websites for
-              people and small businesses.
-            </p>
-            <div className="hero-actions">
-              <a className="button button-dark" href="#work">
-                See my work <ArrowUpRight size={17} />
-              </a>
-              <a className="text-link" href="mailto:harinarzary22@gmail.com">
-                Let&apos;s talk <ArrowUpRight size={16} />
-              </a>
-            </div>
-          </div>
-          <div className="hero-art" aria-hidden="true">
-            <div className="art-card art-card-back" />
-            <div className="art-card art-card-front">
-              <span>HARI</span>
-              <strong>+</strong>
-              <span>IDEAS</span>
-            </div>
-            <span className="art-note">build with care</span>
-          </div>
-        </section>
+        {activeTab === 'twin' && (
+          <AiDevTwin
+            onOpenCal={() => setIsCalOpen(true)}
+            onOpenSpec={() => setIsSpecOpen(true)}
+          />
+        )}
 
-        <section className="work section-wrap" id="work">
-          <div className="section-heading">
-            <p className="eyebrow">Selected work</p>
-            <h2>A few things I enjoy making.</h2>
-          </div>
-          <div className="project-list">
-            {projects.map((project) => (
-              <article className="project" key={project.number}>
-                <span className="project-number">{project.number}</span>
-                <div className="project-content">
-                  <h3>{project.title}</h3>
-                  <p>{project.description}</p>
-                  <div className="tag-list">
-                    {project.tags.map((tag) => <span key={tag}>{tag}</span>)}
-                  </div>
-                </div>
-                <ArrowUpRight className="project-arrow" size={22} />
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="about section-wrap" id="about">
-          <div className="section-heading">
-            <p className="eyebrow">A little about me</p>
-            <h2>Good work starts with listening.</h2>
-          </div>
-          <div className="about-content">
-            <p>
-              I care about the details that make a website feel easy to use: clear words,
-              calm layouts, fast loading, and a thoughtful experience on every screen.
-            </p>
-            <div className="skills">
-              {skills.map((skill) => <span key={skill}>{skill}</span>)}
-            </div>
-          </div>
-        </section>
-
-        <section className="contact section-wrap" id="contact">
-          <p className="eyebrow">Have a project in mind?</p>
-          <h2>Let&apos;s make something<br /><em>worth visiting.</em></h2>
-          <a className="button button-light" href="mailto:harinarzary22@gmail.com">
-            Say hello <Mail size={17} />
-          </a>
-        </section>
+        {activeTab === 'book' && (
+          <BookWebsite
+            onOpenCal={() => setIsCalOpen(true)}
+          />
+        )}
       </main>
 
-      <footer className="site-footer section-wrap">
-        <span>© {new Date().getFullYear()} Hari Narzary</span>
-        <div className="social-links">
-          <a href="https://github.com/WebDevHari20" target="_blank" rel="noreferrer" aria-label="GitHub">
-            <Github size={18} />
-          </a>
-          <a href="https://linkedin.com/in/hari583/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-            <Linkedin size={18} />
-          </a>
+      {/* Footer */}
+      <Footer />
+
+      {/* Mobile Sticky Tab Navigation */}
+      <MobileNav
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
+
+      {/* Global Modals */}
+      <CalModal
+        isOpen={isCalOpen}
+        onClose={() => setIsCalOpen(false)}
+        onConfirm={handleConfirmCalSlot}
+      />
+
+      <ArchitectureModal
+        caseStudy={selectedCaseStudy}
+        onClose={() => setSelectedCaseStudy(null)}
+        onBookCall={() => {
+          setSelectedCaseStudy(null);
+          setIsCalOpen(true);
+        }}
+      />
+
+      <SpecModal
+        isOpen={isSpecOpen}
+        onClose={() => setIsSpecOpen(false)}
+        onBookCall={() => {
+          setIsSpecOpen(false);
+          setIsCalOpen(true);
+        }}
+      />
+
+      {/* Global Toast Alert */}
+      {toastMessage && (
+        <div
+          className="fixed bottom-20 md:bottom-8 right-4 md:right-8 z-50 bg-[#1a1b21] text-white px-5 py-3 flex items-center gap-3 animate-in fade-in slide-in-from-bottom-3 duration-200 border-2"
+          style={{
+            borderColor: 'var(--primary)',
+            boxShadow: '4px 4px 0px var(--primary)',
+            backgroundColor: 'var(--bg-card)',
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ color: 'var(--primary)' }}>
+            check_circle
+          </span>
+          <span className="font-mono-code text-xs uppercase tracking-wider font-bold">
+            {toastMessage}
+          </span>
         </div>
-        <span>Built with care.</span>
-      </footer>
+      )}
     </div>
   );
 }
