@@ -18,83 +18,66 @@ app.use(express.json());
 app.use(express.static(path.resolve(__dirname, 'public')));
 app.use(express.static(path.resolve(__dirname, 'dist')));
 
-const HARI_SYSTEM_INSTRUCTION = `You are Hari Bahadur Narzary's official AI Developer Twin (HARI_DEV_TWIN_V2.5).
-You represent Hari Bahadur Narzary, a senior full-stack web developer and architect based in Assam, India who builds ultra-fast, high-converting bespoke websites for small businesses and brands worldwide.
+const HARI_SYSTEM_INSTRUCTION = `You are Hari Bahadur Narzary's official AI Twin — an interactive digital assistant representing Hari on his portfolio website.
 
-CRITICAL IDENTITY RULE:
-- NEVER mention "Gemini", "Google Gemini", "Google", "LLM", or internal AI model names under any circumstances in your responses.
-- If asked who you are, what AI you are, who built you, or what powers you: respond that you are Hari's AI Developer Twin, an interactive digital assistant trained directly on Hari Bahadur Narzary's freelance web engineering services, pricing, tech stack, and portfolio.
+ABOUT HARI:
+Hari Bahadur Narzary is a Generative AI Engineer from Assam, India. He specializes in building production-grade AI systems including:
+- LLM-powered applications (GPT-4, Claude, Gemini, Llama, Mistral)
+- RAG (Retrieval-Augmented Generation) pipelines with vector databases (Pinecone, Weaviate, ChromaDB)
+- Multi-agent orchestration frameworks (CrewAI, AutoGen, LangGraph)
+- LLM fine-tuning (LoRA, QLoRA) and model optimization (ONNX, vLLM, TGI)
+- Full-stack AI product engineering (FastAPI, Next.js, Python, TypeScript)
+- ML pipeline infrastructure (Docker, AWS/GCP, CI/CD, Weights & Biases)
 
-Key Business Lore & Pricing:
-- Pricing starts at $300!
-  - Starter Website ($300 – $1,200): 1–5 custom high-converting sections, mobile-first, Google Local SEO Schema, sub-second load times, ready in 7–10 days.
-  - Growth / E-Commerce / Bookings ($1,200 – $2,800): Headless Shopify or Next.js + Stripe, Cal.com scheduling, Sanity CMS, ready in 10–14 days.
-  - Full Custom Flagship ($3,500+): Advanced web apps, bespoke 3D WebGL portfolios, multi-user platforms, custom APIs.
+KEY PROJECTS:
+- RAG Knowledge Engine: Enterprise document Q&A with hybrid search and semantic chunking
+- Multi-Agent Orchestrator: Framework for autonomous task decomposition and execution
+- LLM Fine-tuning Pipeline: Scalable training infrastructure with LoRA/QLoRA
+- AI Code Reviewer: GitHub integration for automated PR analysis using LLMs
+- Conversational AI Platform: Full-stack chatbot builder with custom knowledge bases
+- Semantic Search Engine: Sub-100ms neural retrieval over million-doc corpora
 
-Website Maintenance & Ownership Rules (VERY IMPORTANT):
-- If the user/client asks about maintenance, hosting renewals, upkeep, or monthly charges:
-  Always clearly explain that there are TWO clear, flexible options:
-  1. Option 1: Monthly Maintenance Care (~₹10,000 / month, which is around $99 or $100 per month).
-     - Hari personally handles all maintenance: continuous security patches, framework/dependency updates, uptime monitoring, performance speed audits (guaranteeing 95+ Core Web Vitals), Cloudflare CDN optimization, and on-demand copy/image edits.
-  2. Option 2: Zero Maintenance Charge / 100% Client Ownership ($0 / month).
-     - If the client doesn't need or want ongoing maintenance, there is NO maintenance fee!
-     - 100% full ownership of the website, source code repository, domain, and hosting accounts is completely handed over to the customer/client.
-     - The client can renew their hosting directly, manage their website, and maintain it on their own with zero recurring payments to Hari.
-     - With modern headless CMS integration, updating text and imagery is simple for anyone without writing code.
+IDENTITY RULES:
+- If asked who you are: You are Hari's AI Twin, an interactive assistant on his portfolio.
+- Be technical, concise, and enthusiastic about AI/ML.
+- Answer questions about Hari's skills, projects, experience, and availability.
+- Hari is open to freelance work, full-time opportunities, and collaborations in the Gen AI space.
+- Be friendly and approachable while maintaining technical credibility.
+- If asked about something outside Hari's domain, redirect to his AI/ML expertise.
 
-Technical Philosophy:
-  - 100% hand-crafted Next.js, React, TypeScript, Tailwind CSS, Supabase, Stripe.
-  - Zero bloated WordPress plugins, zero slow drag-and-drop page builders (Wix/Squarespace).
-  - 95+ to 100 Lighthouse performance guaranteed (Core Web Vitals).
-  - 100% intellectual property and full GitHub code ownership transferred to client.
-  - Fixed-price guarantees with 0 hidden hourly creep.
-- Turnaround: Average 10–14 calendar days (rush 1-week option available).
-- Tone & Voice: Direct, technical yet approachable, confident, anti-corporate fluff, energetic neo-brutalist tech persona.
-- Keep responses concise, well-structured, formatted with bullet points or numbered lists where appropriate, and always offer clear ballpark estimates or encourage them to book a 15-minute discovery call or fill out the booking brief on the site.`;
+RESPONSE STRUCTURE & FORMATTING RULES (STRICT):
+- ALWAYS produce structured, clean replies with distinct paragraphs and bullet points. NEVER output a continuous wall of text.
+- When listing projects, tech stacks, or features, structure your response as:
+  1. A brief 1-line opening sentence.
+  2. Separate bullet items using '* **[Name]:** [1 concise sentence]' with newline breaks between each item.
+  3. A brief 1-line closing or invitation to ask more.
+- Keep each point punchy and easy to scan on mobile and desktop screens.`;
 
 // Pre-defined intelligent fallbacks when offline or without API key
 function getLocalFallback(query: string): string {
   const lower = query.toLowerCase();
-  if (
-    lower.includes('host') ||
-    lower.includes('deploy') ||
-    lower.includes('vercel') ||
-    lower.includes('domain') ||
-    lower.includes('dns')
-  ) {
-    return "Hari deploys production sites to Vercel or AWS edge hosting with Cloudflare DNS. The process is: connect the Git repository, configure environment variables, connect the custom domain, set DNS records, and verify the production build. Clients receive ownership of the repository, domain, and hosting account, so they can renew and manage hosting themselves. Optional maintenance is around $99–$100/month.";
+  if (lower.includes('project') || lower.includes('built') || lower.includes('portfolio')) {
+    return "Hari has built several production AI systems:\n\n• **RAG Knowledge Engine** — Enterprise document Q&A with hybrid search and semantic chunking (LangChain + Pinecone + GPT-4)\n• **Multi-Agent Orchestrator** — Framework for autonomous task decomposition using CrewAI and AutoGen\n• **LLM Fine-tuning Pipeline** — Scalable LoRA/QLoRA training infrastructure with automated evaluation\n• **AI Code Reviewer** — GitHub integration for automated PR analysis\n• **Conversational AI Platform** — Full-stack chatbot builder with custom knowledge bases\n• **Semantic Search Engine** — Sub-100ms neural retrieval over million-doc corpora";
   }
-  if (
-    lower.includes('maintenance') ||
-    lower.includes('maintain') ||
-    lower.includes('retainer') ||
-    lower.includes('monthly') ||
-    lower.includes('ownership') ||
-    lower.includes('10k') ||
-    lower.includes('renew') ||
-    lower.includes('hosting renewal')
-  ) {
-    return "When it comes to maintenance, you have two flexible choices:\n\n1. **Monthly Maintenance Care (~₹10k / ~$99–$100/mo)**: Hari handles everything—security patches, dependency updates, uptime monitoring, speed audits, and on-demand content tweaks.\n\n2. **Zero Maintenance Fee ($0 / 100% Ownership)**: If you don't need ongoing maintenance, there's zero maintenance charge! We hand over complete 100% ownership of the website, codebase, domain, and hosting accounts directly to you. You can renew your hosting directly and maintain your website on your own whenever you want.";
+  if (lower.includes('stack') || lower.includes('tech') || lower.includes('tool') || lower.includes('skill')) {
+    return "Hari's core tech stack includes:\n\n**LLMs & Frameworks:** GPT-4, Claude, Gemini, Llama, Mistral, LangChain, LlamaIndex, Hugging Face\n**AI Agents & RAG:** CrewAI, AutoGen, Pinecone, Weaviate, ChromaDB\n**ML & Training:** PyTorch, Transformers, LoRA/QLoRA, ONNX, vLLM, Weights & Biases\n**Engineering:** Python, TypeScript, FastAPI, Next.js, Docker, AWS/GCP, CI/CD";
   }
-  if (lower.includes('gemini') || lower.includes('what ai') || lower.includes('what model') || lower.includes('who are you')) {
-    return "I am Hari Bahadur Narzary's official AI Developer Twin. I'm trained directly on Hari's web architecture workflow, pricing starting from $300, and full-stack Next.js client builds.";
+  if (lower.includes('rag') || lower.includes('retrieval')) {
+    return "Hari has deep experience with RAG pipelines. His RAG Knowledge Engine handles enterprise document Q&A with hybrid search (BM25 + vector), semantic chunking, re-ranking, and achieves 95%+ answer accuracy. He uses Pinecone, Weaviate, or ChromaDB depending on the use case, paired with LangChain or LlamaIndex for orchestration.";
   }
-  if (lower.includes('cost') || lower.includes('price') || lower.includes('pricing') || lower.includes('rate') || lower.includes('budget')) {
-    return "Our websites start from just $300! A clean, high-performance starter site (1-5 pages, SEO optimized, sub-second load) runs from $300 to $1,200. Growth setups with e-commerce or booking funnels range between $1,200 – $2,800, and full custom web apps start at $3,500+. All projects have a 100% fixed-price guarantee with zero hidden fees.";
+  if (lower.includes('agent') || lower.includes('multi-agent') || lower.includes('crew')) {
+    return "Hari builds multi-agent systems using CrewAI, AutoGen, and LangGraph. His Multi-Agent Orchestrator is a production framework where multiple AI agents collaboratively break down, plan, and execute complex workflows — from code generation to research synthesis — with tool-use and persistent memory.";
   }
-  if (lower.includes('wordpress') || lower.includes('wix') || lower.includes('custom code')) {
-    return "Custom Next.js code loads in ~0.4s compared to 4s+ on bloated WordPress or Wix themes clogged with 30 plugins. A faster site directly increases conversion rates by 2x to 4x and eliminates monthly plugin security vulnerabilities.";
+  if (lower.includes('fine-tun') || lower.includes('train') || lower.includes('lora')) {
+    return "Hari has fine-tuned 10+ open-source LLMs (Llama, Mistral) for specialized domains using LoRA/QLoRA. His pipeline includes automated dataset curation, training with PyTorch + Hugging Face, evaluation with custom benchmarks, and one-click deployment via vLLM or TGI. He tracks everything with Weights & Biases.";
   }
-  if (lower.includes('timeline') || lower.includes('turnaround') || lower.includes('long') || lower.includes('how fast')) {
-    return "Standard delivery is 10 to 14 calendar days from kickoff to live deployment. We also offer a 1-week rush sprint option if you need an urgent launch.";
+  if (lower.includes('available') || lower.includes('hire') || lower.includes('freelance') || lower.includes('work') || lower.includes('opportunit')) {
+    return "Yes! Hari is open to freelance work, full-time opportunities, and collaborations in the Gen AI space. Whether you need help with LLM integration, RAG pipelines, agent systems, or full-stack AI products — feel free to reach out via the contact form on this site!";
   }
-  if (lower.includes('available') || lower.includes('start') || lower.includes('slot')) {
-    return "Hari currently has 1 client slot open for the sprint starting this coming Monday! Slots are capped at 2 concurrently to protect high build velocity and daily Slack access.";
+  if (lower.includes('who') || lower.includes('about') || lower.includes('yourself')) {
+    return "I'm Hari Bahadur Narzary's AI Twin — an interactive assistant on his portfolio. Hari is a Generative AI Engineer from Assam, India, specializing in LLMs, RAG pipelines, multi-agent systems, and production ML infrastructure. He builds intelligent systems that solve real-world problems.";
   }
-  if (lower.includes('what do you do') || lower.includes('service')) {
-    return "Hari builds full-stack, high-converting websites tailored for small businesses: responsive marketing sites, headless e-commerce (Shopify/Next.js), appointment booking hubs, and CMS architectures starting from $300.";
-  }
-  return `Regarding "${query}": Hari engineers high-performance web presences built in Next.js and Tailwind starting from $300. Every build features sub-second page loads, mobile responsiveness, and 100% code ownership. To get an exact fixed estimate, feel free to book a quick 15-minute discovery call or send over your brief!`;
+  return `Hari is a Generative AI Engineer specializing in LLMs, RAG, multi-agent systems, and production ML. To learn more about his specific experience with "${query}", feel free to explore his projects section or send a message through the contact form!`;
 }
 
 app.post('/api/chat', async (req, res) => {
@@ -131,20 +114,39 @@ app.post('/api/chat', async (req, res) => {
 
       contents.push({ role: 'user', parts: [{ text: message }] });
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents,
-        config: {
-          systemInstruction: HARI_SYSTEM_INSTRUCTION,
-          temperature: 0.7,
-          maxOutputTokens: 600,
-        },
-      });
+      const candidates = ['gemini-3.1-flash-lite', 'gemini-3.5-flash-lite', 'gemini-3-flash-preview'];
+      let response: any = null;
+      let usedModel = '';
 
-      const replyText = response.text || getLocalFallback(message);
+      for (const model of candidates) {
+        try {
+          response = await ai.models.generateContent({
+            model,
+            contents,
+            config: {
+              systemInstruction: HARI_SYSTEM_INSTRUCTION,
+              temperature: 0.7,
+              maxOutputTokens: 600,
+            },
+          });
+          if (response?.text) {
+            usedModel = model;
+            break;
+          }
+        } catch (modelErr: any) {
+          console.warn(`Model ${model} failed, trying next fallback:`, modelErr?.message || modelErr);
+        }
+      }
+
+      if (!response?.text) {
+        throw new Error('All Gemini candidate models failed to return content');
+      }
+
+      const replyText = response.text;
       return res.json({
         reply: replyText,
         source: 'twin_ai',
+        model: usedModel,
       });
     } catch (aiErr: any) {
       console.error('Gemini API call failed, falling back to local engine:', aiErr?.message || aiErr);
