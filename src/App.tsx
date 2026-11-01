@@ -30,6 +30,7 @@ const skills = ['React', 'TypeScript', 'JavaScript', 'HTML & CSS', 'UI design', 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
 
+<<<<<<< HEAD
   const closeMenu = () => setMenuOpen(false);
 
   return (
@@ -38,6 +39,56 @@ export default function App() {
         <a className="logo" href="#top" onClick={closeMenu} aria-label="Hari home">
           H<span>.</span>
         </a>
+=======
+  useEffect(() => {
+    applyThemeToDom(vibeTheme);
+  }, [vibeTheme]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab]);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3800);
+  };
+
+  const handleSetTheme = (newTheme: VibeTheme) => {
+    setVibeTheme(newTheme);
+    const themeObj = THEMES[newTheme];
+    if (themeObj) {
+      showToast(`THEME ACTIVATED: ${themeObj.name.toUpperCase()}`);
+    }
+  };
+
+  const handleSetDensity = (newDensity: DensityMode) => {
+    setDensityMode(newDensity);
+    showToast(`LAYOUT DENSITY: ${newDensity}`);
+  };
+
+  const handleConfirmCalSlot = (slot: string) => {
+    showToast(`DISCOVERY CALL RESERVED FOR: ${slot}`);
+  };
+
+  return (
+    <div
+      className="min-h-screen text-[#e3e1e9] flex flex-col justify-between selection:bg-[var(--primary)] selection:text-[var(--primary-contrast)] transition-colors duration-300"
+      data-density={densityMode}
+      style={{ backgroundColor: 'var(--bg-main)' }}
+    >
+      {/* Top Fixed Header */}
+      <Header
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        densityMode={densityMode}
+        setDensityMode={handleSetDensity}
+        vibeTheme={vibeTheme}
+        setVibeTheme={handleSetTheme}
+        onOpenCal={() => setIsCalOpen(true)}
+      />
+>>>>>>> cb018e8be50429feda14d947e6210608a08a1963
 
         <button
           className="menu-toggle"

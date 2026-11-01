@@ -13,6 +13,7 @@ export const CalModal: React.FC<CalModalProps> = ({ isOpen, onClose, onConfirm }
   const [email, setEmail] = useState('');
   const [isBooked, setIsBooked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [copiedEmail, setCopiedEmail] = useState(false);
 
   if (!isOpen) return null;
@@ -29,9 +30,10 @@ export const CalModal: React.FC<CalModalProps> = ({ isOpen, onClose, onConfirm }
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmissionError(null);
 
     try {
-      await fetch('/api/schedule-call', {
+      const response = await fetch('/api/schedule-call', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -40,13 +42,24 @@ export const CalModal: React.FC<CalModalProps> = ({ isOpen, onClose, onConfirm }
           slot: selectedSlot,
         }),
       });
+      if (!response.ok) {
+        let errorDetail = '';
+        try {
+          const data = await response.json();
+          errorDetail = data?.error || data?.message || '';
+        } catch {
+          const text = await response.text().catch(() => '');
+          errorDetail = text ? `Server response (${response.status}): ${text.slice(0, 150)}` : `Server response (${response.status})`;
+        }
+        throw new Error(errorDetail || 'The booking could not be sent.');
+      }
+      setIsBooked(true);
+      onConfirm(selectedSlot);
     } catch (err) {
-      console.warn('Failed to dispatch call reservation to backend:', err);
+      setSubmissionError(err instanceof Error ? err.message : 'The booking could not be sent.');
     }
 
     setIsSubmitting(false);
-    setIsBooked(true);
-    onConfirm(selectedSlot);
   };
 
   return (
@@ -185,6 +198,19 @@ Sent via Hari's Web Engineering Portfolio`
           );
         })() : (
           <form onSubmit={handleBooking} className="flex flex-col gap-4">
+            {submissionError && (
+              <div
+                className="p-3 border-2 text-sm font-grotesk"
+                style={{
+                  color: '#fecaca',
+                  backgroundColor: 'rgba(127, 29, 29, 0.35)',
+                  borderColor: '#ef4444',
+                }}
+                role="alert"
+              >
+                {submissionError} Please email Hari directly if the problem continues.
+              </div>
+            )}
             <p className="font-grotesk text-sm text-zinc-300">
               Pick a slot to audit your current site, review tech architecture, and establish a fixed-price sprint quote starting from $300.
             </p>

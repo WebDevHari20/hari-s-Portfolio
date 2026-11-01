@@ -80,6 +80,7 @@ h2 { max-width: 580px; margin: 0; font-size: clamp(2.2rem, 4vw, 4rem); line-heig
 .social-links { display: flex; gap: 17px; }
 .social-links a:hover { color: #d65b42; }
 
+<<<<<<< HEAD
 @media (max-width: 700px) {
   .section-wrap, .site-header { width: min(100% - 36px, 560px); }
   .site-header { position: relative; padding: 22px 0; }
@@ -99,4 +100,109 @@ h2 { max-width: 580px; margin: 0; font-size: clamp(2.2rem, 4vw, 4rem); line-heig
   .about-content { padding-top: 36px; }
   .contact { width: 100%; padding: 100px 18px; }
   .site-footer { width: min(100% - 36px, 560px); font-size: .62rem; }
+=======
+.theme-bg-main {
+  background-color: var(--bg-main) !important;
+}
+
+.theme-bg-card {
+  background-color: var(--bg-card) !important;
+}
+
+.theme-bg-card-alt {
+  background-color: var(--bg-card-alt) !important;
+}
+
+.theme-border-subtle {
+  border-color: var(--border-subtle) !important;
+}
+
+.theme-shadow-brutal {
+  box-shadow: 4px 4px 0px var(--secondary) !important;
+}
+
+.theme-shadow-primary {
+  box-shadow: 4px 4px 0px var(--primary) !important;
+}
+
+.theme-shadow-sm {
+  box-shadow: 2px 2px 0px var(--secondary) !important;
+}
+
+/* Layout density presets */
+[data-density='NEO'] .gap-6 {
+  gap: 1rem !important;
+}
+
+[data-density='NEO'] .p-5 {
+  padding: 1rem !important;
+}
+
+[data-density='NEO'] .p-6 {
+  padding: 1.25rem !important;
+}
+
+[data-density='NEO'] .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1rem !important;
+}
+
+[data-density='MIN'] .gap-6 {
+  gap: 0.75rem !important;
+}
+
+[data-density='MIN'] .p-5 {
+  padding: 0.75rem !important;
+}
+
+[data-density='MIN'] .p-6 {
+  padding: 1rem !important;
+}
+
+[data-density='MIN'] .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0.75rem !important;
+}
+
+.font-syne {
+  font-family: 'Syne', sans-serif;
+}
+
+.font-grotesk {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-mono-code {
+  font-family: 'Space Mono', monospace;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 26s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Material symbols outlined helper */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+>>>>>>> cb018e8be50429feda14d947e6210608a08a1963
 }

@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
+import { sendNotificationEmail } from './lib/api';
 
 dotenv.config();
 
@@ -55,6 +56,15 @@ Technical Philosophy:
 function getLocalFallback(query: string): string {
   const lower = query.toLowerCase();
   if (
+    lower.includes('host') ||
+    lower.includes('deploy') ||
+    lower.includes('vercel') ||
+    lower.includes('domain') ||
+    lower.includes('dns')
+  ) {
+    return "Hari deploys production sites to Vercel or AWS edge hosting with Cloudflare DNS. The process is: connect the Git repository, configure environment variables, connect the custom domain, set DNS records, and verify the production build. Clients receive ownership of the repository, domain, and hosting account, so they can renew and manage hosting themselves. Optional maintenance is around $99–$100/month.";
+  }
+  if (
     lower.includes('maintenance') ||
     lower.includes('maintain') ||
     lower.includes('retainer') ||
@@ -94,8 +104,9 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey || apiKey === 'MY_GEMINI_API_KEY' || apiKey.trim() === '') {
+    const configuredKey = process.env.GEMINI_API_KEY?.trim();
+    const apiKey = configuredKey?.replace(/^(['"])(.*)\1$/, '$2').trim();
+    if (!apiKey || apiKey === 'MY_GEMINI_API_KEY') {
       return res.json({
         reply: getLocalFallback(message),
         source: 'local_engine',
@@ -121,7 +132,7 @@ app.post('/api/chat', async (req, res) => {
       contents.push({ role: 'user', parts: [{ text: message }] });
 
       const response = await ai.models.generateContent({
-        model: 'gemini-3.8-flash',
+        model: 'gemini-2.5-flash',
         contents,
         config: {
           systemInstruction: HARI_SYSTEM_INSTRUCTION,
@@ -136,7 +147,7 @@ app.post('/api/chat', async (req, res) => {
         source: 'twin_ai',
       });
     } catch (aiErr: any) {
-      console.warn('AI API call failed, falling back to local engine:', aiErr?.message || aiErr);
+      console.error('Gemini API call failed, falling back to local engine:', aiErr?.message || aiErr);
       return res.json({
         reply: getLocalFallback(message),
         source: 'local_engine_fallback',
@@ -190,6 +201,31 @@ app.post('/api/contact', async (req, res) => {
     console.log(`Scope: ${record.projectType} | Timeline: ${record.timeline} | Tier: ${record.budgetTier}`);
     console.log(`Project Notes:\n${record.projectLore}`);
     console.log(`======================================================\n`);
+
+    try {
+      await sendNotificationEmail({
+        subject: `New website inquiry: ${record.businessName}`,
+        replyTo: record.contactHandle,
+        text: [
+          `New website inquiry received at ${timestamp}.`,
+          '',
+          `Contact: ${record.contactName}`,
+          `Email / WhatsApp: ${record.contactHandle}`,
+          `Business: ${record.businessName}`,
+          `Current website: ${record.currentSite}`,
+          `Project type: ${record.projectType}`,
+          `Timeline: ${record.timeline}`,
+          `Budget: ${record.budgetTier}`,
+          '',
+          'Project requirements:',
+          record.projectLore,
+        ].join('\n'),
+      });
+    } catch (emailErr) {
+      console.error('Inquiry email delivery failed:', emailErr);
+      const message = emailErr instanceof Error ? emailErr.message : 'Email delivery failed.';
+      return res.status(503).json({ error: `The inquiry could not be emailed: ${message}` });
+    }
 
     // Persist to local JSON database file
     try {
@@ -245,6 +281,24 @@ app.post('/api/schedule-call', async (req, res) => {
     console.log(`Prospect: ${booking.name} | Email: ${booking.email}`);
     console.log(`Confirmed Slot: ${booking.slot}`);
     console.log(`======================================================\n`);
+
+    try {
+      await sendNotificationEmail({
+        subject: `New discovery call booking: ${booking.name}`,
+        replyTo: booking.email,
+        text: [
+          `New 15-minute discovery call booking received at ${timestamp}.`,
+          '',
+          `Name: ${booking.name}`,
+          `Email: ${booking.email}`,
+          `Selected slot: ${booking.slot}`,
+        ].join('\n'),
+      });
+    } catch (emailErr) {
+      console.error('Booking email delivery failed:', emailErr);
+      const message = emailErr instanceof Error ? emailErr.message : 'Email delivery failed.';
+      return res.status(503).json({ error: `The booking could not be emailed: ${message}` });
+    }
 
     // Persist to local JSON database file
     try {
